@@ -2,9 +2,19 @@ cmake_minimum_required(VERSION 3.0)
 
 project(LULESH CXX)
 
-option(WITH_MPI    "Build LULESH with MPI"          TRUE)
+set(CMAKE_CXX_COMPILER "clang++")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+option(WITH_MPI    "Build LULESH with MPI"          FALSE)
 option(WITH_OPENMP "Build LULESH with OpenMP"       TRUE)
 option(WITH_SILO   "Build LULESH with silo support" FALSE)
+
+# Compile flags
+set(BUILD_FLAGS "-fopenmp -O3")
+set(OMP_DIR $ENV{OPENMP_DIR})
 
 if (WITH_MPI)
   find_package(MPI REQUIRED)
@@ -16,8 +26,8 @@ else()
 endif()
 
 if (WITH_OPENMP)
-  find_package(OpenMP REQUIRED)
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+  set(INCLUDE_DIRECTORIES ${INCLUDE_DIRECTORIES} ${OMP_DIR})
+  include_directories(${INCLUDE_DIRECTORIES})
 endif()
 
 if (WITH_SILO)
@@ -42,6 +52,9 @@ if (WITH_SILO)
   endif()
 endif()
 
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${BUILD_FLAGS}")
+
 set(LULESH_SOURCES
   lulesh-comm.cc
   lulesh-init.cc
@@ -52,4 +65,5 @@ set(LULESH_SOURCES
 set(LULESH_EXEC lulesh2.0)
 
 add_executable(${LULESH_EXEC} ${LULESH_SOURCES})
-target_link_libraries(${LULESH_EXEC} ${LULESH_EXTERNAL_LIBS})
+# target_link_libraries(${LULESH_EXEC} PRIVATE ${LULESH_EXTERNAL_LIBS})
+target_link_options(${LULESH_EXEC} PUBLIC -L${OMP_DIR} -lomp)
