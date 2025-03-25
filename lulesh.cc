@@ -518,7 +518,9 @@ void IntegrateStressForElems( Domain &domain,
   }
   // loop over all elements
 
-#pragma omp parallel for firstprivate(numElem)
+  #pragma omp parallel
+  #pragma omp single
+  #pragma omp taskloop firstprivate(numElem)
   for( Index_t k=0 ; k<numElem ; ++k )
   {
     const Index_t* const elemToNode = domain.nodelist(k);
@@ -779,7 +781,9 @@ void CalcFBHourglassForceForElems( Domain &domain,
 /*    compute the hourglass modes */
 
 
-#pragma omp parallel for firstprivate(numElem, hourg)
+#pragma omp parallel
+#pragma omp single
+#pragma omp taskloop firstprivate(numElem, hourg)
    for(Index_t i2=0;i2<numElem;++i2){
       Real_t *fx_local, *fy_local, *fz_local ;
       Real_t hgfx[8], hgfy[8], hgfz[8] ;
@@ -1006,7 +1010,9 @@ void CalcHourglassControlForElems(Domain& domain,
    Real_t *z8n  = Allocate<Real_t>(numElem8) ;
 
    /* start loop over elements */
-#pragma omp parallel for firstprivate(numElem)
+   #pragma omp parallel
+   #pragma omp single
+   #pragma omp taskloop firstprivate(numElem)
    for (Index_t i=0 ; i<numElem ; ++i){
       Real_t  x1[8],  y1[8],  z1[8] ;
       Real_t pfx[8], pfy[8], pfz[8] ;
@@ -1079,7 +1085,9 @@ void CalcVolumeForceForElems(Domain& domain)
                                domain.numNode()) ;
 
       // check for negative element volume
-#pragma omp parallel for firstprivate(numElem)
+      #pragma omp parallel
+      #pragma omp single
+      #pragma omp taskloop firstprivate(numElem)
       for ( Index_t k=0 ; k<numElem ; ++k ) {
          if (determ[k] <= Real_t(0.0)) {
 #if USE_MPI            
@@ -1507,7 +1515,9 @@ void CalcKinematicsForElems( Domain &domain,
 {
 
   // loop over all elements
-#pragma omp parallel for firstprivate(numElem, deltaTime)
+  #pragma omp parallel
+  #pragma omp single
+  #pragma omp taskloop firstprivate(numElem, deltaTime)
   for( Index_t k=0 ; k<numElem ; ++k )
   {
     Real_t B[3][8] ; /** shape function derivatives */

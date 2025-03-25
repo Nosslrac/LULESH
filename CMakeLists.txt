@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.0)
+cmake_minimum_required(VERSION 3.15)
 
 project(LULESH CXX)
 
@@ -13,8 +13,10 @@ option(WITH_OPENMP "Build LULESH with OpenMP"       TRUE)
 option(WITH_SILO   "Build LULESH with silo support" FALSE)
 
 # Compile flags
-set(BUILD_FLAGS "-fopenmp -O3")
-set(OMP_DIR $ENV{OPENMP_DIR})
+set(BUILD_FLAGS "-fopenmp -O3 -march=native")
+set(OMP_INC $ENV{OPENMP_INC})
+set(OMP_LIB $ENV{OPENMP_LIB})
+
 
 if (WITH_MPI)
   find_package(MPI REQUIRED)
@@ -26,7 +28,8 @@ else()
 endif()
 
 if (WITH_OPENMP)
-  set(INCLUDE_DIRECTORIES ${INCLUDE_DIRECTORIES} ${OMP_DIR})
+  list(APPEND LULESH_EXTERNAL_LIBS ${OMP_LIB}/libomp.so)
+  set(INCLUDE_DIRECTORIES ${INCLUDE_DIRECTORIES} ${OMP_INC})
   include_directories(${INCLUDE_DIRECTORIES})
 endif()
 
@@ -65,5 +68,4 @@ set(LULESH_SOURCES
 set(LULESH_EXEC lulesh2.0)
 
 add_executable(${LULESH_EXEC} ${LULESH_SOURCES})
-# target_link_libraries(${LULESH_EXEC} PRIVATE ${LULESH_EXTERNAL_LIBS})
-target_link_options(${LULESH_EXEC} PUBLIC -L${OMP_DIR} -lomp)
+target_link_libraries(${LULESH_EXEC} PRIVATE ${LULESH_EXTERNAL_LIBS})
