@@ -13,7 +13,7 @@ option(WITH_OPENMP "Build LULESH with OpenMP"       TRUE)
 option(WITH_SILO   "Build LULESH with silo support" FALSE)
 
 # Compile flags
-set(BUILD_FLAGS "-fopenmp -O3 -march=native")
+set(BUILD_FLAGS "-fopenmp -g -O3 -march=native")
 set(OMP_INC $ENV{OPENMP_INC})
 set(OMP_LIB $ENV{OPENMP_LIB})
 
