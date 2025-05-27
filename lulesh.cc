@@ -569,11 +569,11 @@ void IntegrateStressForElems( Domain &domain,
   if (numthreads > 1) {
      // If threaded, then we need to copy the data out of the temporary
      // arrays used above into the final forces field
-// #pragma omp parallel for firstprivate(numNode)
-#pragma omp parallel firstprivate(numNode)
-{
-#pragma omp single
-#pragma omp taskloop  
+     // #pragma omp parallel firstprivate(numNode)
+     // {
+      // #pragma omp single
+      // #pragma omp taskloop  
+   #pragma omp parallel for firstprivate(numNode)
      for( Index_t gnode=0 ; gnode<numNode ; ++gnode )
      {
         Index_t count = domain.nodeElemCount(gnode) ;
@@ -595,7 +595,7 @@ void IntegrateStressForElems( Domain &domain,
      Release(&fy_elem) ;
      Release(&fx_elem) ;
   }
-}
+// }
 }
 
 /******************************************/
@@ -980,11 +980,11 @@ void CalcFBHourglassForceForElems( Domain &domain,
 
    if (numthreads > 1) {
      // Collect the data from the local arrays into the final force arrays
-// #pragma omp parallel for firstprivate(numNode)
-#pragma omp parallel firstprivate(numNode)
-{
-#pragma omp single
-#pragma omp taskloop
+     // #pragma omp parallel firstprivate(numNode)
+     // {
+      // #pragma omp single
+      // #pragma omp taskloop
+   #pragma omp parallel for firstprivate(numNode)
       for( Index_t gnode=0 ; gnode<numNode ; ++gnode )
       {
          Index_t count = domain.nodeElemCount(gnode) ;
@@ -1006,7 +1006,7 @@ void CalcFBHourglassForceForElems( Domain &domain,
       Release(&fy_elem) ;
       Release(&fx_elem) ;
    }
-  }
+//   }
 }
 
 /******************************************/
@@ -1626,11 +1626,11 @@ void CalcLagrangeElements(Domain& domain)
       CalcKinematicsForElems(domain, deltatime, numElem) ;
 
       // element loop to do some stuff not included in the elemlib function.
-// #pragma omp parallel for firstprivate(numElem)
-#pragma omp parallel firstprivate(numElem)
-{
-#pragma omp single
-#pragma omp taskloop
+      // #pragma omp parallel firstprivate(numElem)
+      // {
+         // #pragma omp single
+         // #pragma omp taskloop
+   #pragma omp parallel for firstprivate(numElem)
       for ( Index_t k=0 ; k<numElem ; ++k )
       {
          // calc strain rate and apply as constraint (only done in FB element)
@@ -1655,7 +1655,7 @@ void CalcLagrangeElements(Domain& domain)
       }
       domain.DeallocateStrains();
    }
-  }
+//   }
 }
 
 /******************************************/
